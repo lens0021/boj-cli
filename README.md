@@ -7,7 +7,7 @@ Your answer is good for in/output samples
 
 ## 사용법
 
-루트 폴더에서 다음 명령 실행시 [Baekjoon Online Judge]의 문제를 가져오거나 채점합니다. (problem_number는 문제 번호 숫자)
+다음 명령 실행시 [Baekjoon Online Judge]의 문제를 가져오거나 채점합니다. (problem_number는 문제 번호 숫자)
 
 ```shell
 ./index [problem_number]
