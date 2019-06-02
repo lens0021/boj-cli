@@ -33,6 +33,7 @@ Your answer is good for in/output samples
 
 ```shell
 npm install
+echo '~/src' > settings.txt
 ```
 
 [baekjoon online judge]: https://www.acmicpc.net/

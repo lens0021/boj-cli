@@ -1,24 +1,27 @@
 #!/bin/bash
 set -euo pipefail; IFS=$'\n\t'
 
-if [ ! -f "problems/$1.input.txt" ]; then
-    echo "The file problems/$1.input.py is not exist yet.";
+cd "$(dirname "${BASH_SOURCE[0]}")"
+DIR=$(cat settings.txt)
 
-    touch "problems/$1.py"
-    echo "# https://www.acmicpc.net/problem/$1" > "problems/$1.py"
-    code "problems/$1.py"
+if [ ! -f "$DIR/$1.input.txt" ]; then
+    echo "The file $DIR/$1.input.py is not exist yet.";
+
+    touch "$DIR/$1.py"
+    echo "# https://www.acmicpc.net/problem/$1" > "$DIR/$1.py"
+    code "$DIR/$1.py"
     google-chrome "https://www.acmicpc.net/problem/$1"
 
-    node load.js "$1"
+    node load.js "$1" "$DIR"
 else
-    if [ -f "problems/$1.your.txt" ]; then
-        rm "problems/$1.your.txt";
+    if [ -f "$DIR/$1.your.txt" ]; then
+        rm "$DIR/$1.your.txt";
     fi
 
-    touch "problems/$1.your.txt"
-    python3 "problems/$1.py" < "problems/$1.input.txt" > "problems/$1.your.txt"
-    if [[ $(git diff --no-index "problems/$1.output.txt" "problems/$1.your.txt") ]]; then
-        git diff --no-index "problems/$1.output.txt" "problems/$1.your.txt";
+    touch "$DIR/$1.your.txt"
+    python3 "$DIR/$1.py" < "$DIR/$1.input.txt" > "$DIR/$1.your.txt"
+    if [[ $(git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt") ]]; then
+        git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt";
     else
         echo 'Your answer is good for in/output samples';
     fi

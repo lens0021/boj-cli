@@ -6,6 +6,7 @@ const options = {
   host: "www.acmicpc.net",
   path: `/problem/${problem}`
 };
+const path = process.argv[3];
 
 let html = "";
 https
@@ -28,8 +29,8 @@ https
           console.log(`The file ${name} has been saved!`);
         });
       };
-      writeToFile(`./problems/${problem}.input.txt`, sampleInput);
-      writeToFile(`./problems/${problem}.output.txt`, sampleOutput);
+      writeToFile(`${path}/${problem}.input.txt`, sampleInput);
+      writeToFile(`${path}/${problem}.output.txt`, sampleOutput);
     });
   })
   .on("error", e => {
