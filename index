@@ -10,7 +10,7 @@ if [ ! -f "$DIR/$1.input.txt" ]; then
     touch "$DIR/$1.py"
     echo "# https://www.acmicpc.net/problem/$1" > "$DIR/$1.py"
     code "$DIR/$1.py"
-    google-chrome "https://www.acmicpc.net/problem/$1"
+    # google-chrome "https://www.acmicpc.net/problem/$1"
 
     node load.js "$1" "$DIR"
 else
