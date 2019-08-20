@@ -5,7 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 DIR=$(cat settings.txt)
 
 if [ ! -f "$DIR/$1.input.txt" ]; then
-    echo "The file $DIR/$1.input.py is not exist yet.";
+    echo "The file $DIR/$1.input.py does not exist yet.";
 
     touch "$DIR/$1.py"
     echo "# https://www.acmicpc.net/problem/$1" > "$DIR/$1.py"
