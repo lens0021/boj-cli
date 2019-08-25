@@ -14,16 +14,20 @@ if [ ! -f "$DIR/$1.input.txt" ]; then
 
     node load.js "$1" "$DIR"
 else
-    if [ -f "$DIR/$1.your.txt" ]; then
-        rm "$DIR/$1.your.txt";
-    fi
-
-    touch "$DIR/$1.your.txt"
-    python3 "$DIR/$1.py" < "$DIR/$1.input.txt" > "$DIR/$1.your.txt"
-    if [[ $(git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt") ]]; then
-        git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt";
+    if [ "${2:-}" == "-o" ]; then # output only
+        python3 "$DIR/$1.py" < "$DIR/$1.input.txt"
     else
-        echo 'Your answer is good for in/output samples';
+        if [ -f "$DIR/$1.your.txt" ]; then
+            rm "$DIR/$1.your.txt";
+        fi
+
+        touch "$DIR/$1.your.txt"
+        python3 "$DIR/$1.py" < "$DIR/$1.input.txt" > "$DIR/$1.your.txt"
+        if [[ $(git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt") ]]; then
+            git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt";
+        else
+            echo 'Your answer is good for in/output samples';
+        fi
     fi
 fi
 
