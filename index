@@ -29,6 +29,7 @@ function fetch() {
     node load.js "${SITE}" "${NUMBER}" "${DIR}"
     code "${DIR}/${NUMBER}.py"
     rm "${DIR}/${NUMBER}.temp.html"
+    cp casetest.py "${DIR}"
 }
 
 function _test() {
