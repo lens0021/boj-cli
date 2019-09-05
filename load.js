@@ -73,20 +73,15 @@ switch (SITE) {
       let result = "";
       let params = [];
       for (const td of tc.children) {
-        if (
-          td.firstElementChild != null &&
-          td.firstElementChild.tagName == "Q"
-        ) {
-          params.push(`"${td.textContent}"`);
-        } else if (td != tc.lastElementChild) {
-          params.push(invalidate(td.textContent));
+        if (td != tc.lastElementChild) {
+          params.push(extracteValue(td));
         } else {
-          result = invalidate(td.textContent);
+          result = extracteValue(td);
         }
       }
       testCode +=
         `casetest.test(\n    __import__("${NUMBER}").solution,\n` +
-        `    ${params.join(", ")},\n    ${result}\n)\n`;
+        `    [${params.join(", ")}],\n    ${result}\n)\n`;
     }
 
     writeToFile(`${PATH}/${NUMBER}.py`, sampleCode);
@@ -94,13 +89,30 @@ switch (SITE) {
     break;
 }
 
-function invalidate(str) {
-  switch (str) {
-    case "true":
-      return "True";
-    case "false":
-      return "False";
-    default:
-      return str;
+function extracteValue(e) {
+  let text = "";
+  for (const node of e.childNodes) {
+    switch (node.nodeName) {
+      case "#text":
+        switch (node.nodeValue) {
+          case "true":
+            text += "True";
+            break;
+          case "false":
+            text += "False";
+            break;
+          default:
+            text += node.nodeValue;
+        }
+        break;
+      case "CODE":
+        text += node.textContent;
+        break;
+      case "Q":
+      default:
+        text += `"${node.textContent}"`;
+        break;
+    }
   }
+  return text;
 }

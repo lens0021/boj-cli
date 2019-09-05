@@ -3,7 +3,7 @@ class Counter:
 
 
 def test(fn, params, result):
-    test_result = fn(params)
+    test_result = fn(*params)
     if result == test_result:
         print(f"{Counter.count+1}번 테스트를 통과하였습니다.")
     else:
