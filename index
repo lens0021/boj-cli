@@ -1,33 +1,63 @@
 #!/bin/bash
 set -euo pipefail; IFS=$'\n\t'
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
-DIR=$(cat settings.txt)
+SITE=$1
+NUMBER=$2
+OPT="${3:-}"
 
-if [ ! -f "$DIR/$1.input.txt" ]; then
-    echo "The file $DIR/$1.input.py does not exist yet.";
+function is_fetched() {
+    if [ "$SITE" == "boj" ] & [ -f "${DIR}/${NUMBER}.input.txt" ]; then
+        return 0
+    elif [ "$SITE" == "programmers" ] & [ -f "${DIR}/${NUMBER}.py" ]; then
+        return 0
+    fi
 
-    touch "$DIR/$1.py"
-    echo "# https://www.acmicpc.net/problem/$1" > "$DIR/$1.py"
-    code "$DIR/$1.py"
-    # google-chrome "https://www.acmicpc.net/problem/$1"
+    return 1
+}
 
-    node load.js "$1" "$DIR"
-else
-    if [ "${2:-}" == "-o" ]; then # output only
-        python3 "$DIR/$1.py" < "$DIR/$1.input.txt"
-    else
-        if [ -f "$DIR/$1.your.txt" ]; then
-            rm "$DIR/$1.your.txt";
-        fi
+function fetch() {
+    case "$SITE" in
+    "boj")
+        echo "# https://www.acmicpc.net/problem/${NUMBER}" > "${DIR}/${NUMBER}.py"
+    ;;
+    "programmers")
+        curl "https://programmers.co.kr/learn/courses/30/lessons/${NUMBER}?language=python3" \
+            > "${DIR}/${NUMBER}.temp.html"
+    ;;
+    esac
 
-        touch "$DIR/$1.your.txt"
-        python3 "$DIR/$1.py" < "$DIR/$1.input.txt" > "$DIR/$1.your.txt"
-        if [[ $(git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt") ]]; then
-            git diff --no-index "$DIR/$1.output.txt" "$DIR/$1.your.txt";
+    node load.js "${SITE}" "${NUMBER}" "${DIR}"
+    code "${DIR}/${NUMBER}.py"
+    rm "${DIR}/${NUMBER}.temp.html"
+}
+
+function _test() {
+    case "$SITE" in
+    "boj")
+        python3 "${DIR}/${NUMBER}.py" < "${DIR}/${NUMBER}.input.txt" > "${DIR}/${NUMBER}.your.txt"
+        if [[ $(git diff --no-index "${DIR}/${NUMBER}.output.txt" "${DIR}/${NUMBER}.your.txt") ]]; then
+            git diff --no-index "${DIR}/${NUMBER}.output.txt" "${DIR}/${NUMBER}.your.txt";
         else
             echo 'Your answer is good for in/output samples';
         fi
+    ;;
+    "programmers")
+        python3 "${DIR}/${NUMBER}.test.py"
+    ;;
+    esac
+}
+
+DIR="$(yq r settings.yaml sites."$SITE")"
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+if ! is_fetched; then
+    echo "Problem ${NUMBER} is not fetched yet.";
+    fetch
+else
+    if [ "$OPT" == "-o" ]; then # output only
+        python3 "${DIR}/${NUMBER}.py" < "${DIR}/${NUMBER}.input.txt"
+    else
+        _test
     fi
 fi
 

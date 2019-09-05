@@ -1,0 +1,4 @@
+language: py
+sites:
+  boj: ~/boj
+  programmers: ~/prg

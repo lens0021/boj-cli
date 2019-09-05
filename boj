@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail; IFS=$'\n\t'
+
+./index boj "$1" "$2"
