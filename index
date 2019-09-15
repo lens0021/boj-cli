@@ -36,14 +36,14 @@ function fetch() {
     "boj")
         case "$LANG" in
             "py")
-                CODE="#"
+                CODE="# https://www.acmicpc.net/problem/${NUMBER}"
                 ;;
             "js")
-                CODE="//"
+                CODE="// https://www.acmicpc.net/problem/${NUMBER}"$'\n"use strict";';
                 ;;
             esac
 
-        echo "${CODE} https://www.acmicpc.net/problem/${NUMBER}" > "${DIR}/${NUMBER}.${LANG}"
+        echo "${CODE}" > "${DIR}/${NUMBER}.${LANG}"
         ;;
     "programmers")
         curl "https://programmers.co.kr/learn/courses/30/lessons/${NUMBER}?language=python3" \
@@ -88,7 +88,14 @@ if ! is_fetched; then
     fetch
 else
     if [ ! -z "${OUTPUT}" ]; then # output only
-        python3 "${DIR}/${NUMBER}.py" < "${DIR}/${NUMBER}.input.txt"
+        case "${LANG}" in
+        "py")
+            python3 "${DIR}/${NUMBER}.${LANG}" < "${DIR}/${NUMBER}.input.txt"
+            ;;
+        "js")
+            node "${DIR}/${NUMBER}.${LANG}" < "${DIR}/${NUMBER}.input.txt"
+            ;;
+        esac
     else
         _test
     fi
