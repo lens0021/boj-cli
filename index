@@ -1,14 +1,30 @@
 #!/bin/bash
 set -euo pipefail; IFS=$'\n\t'
 
-SITE=$1
-NUMBER=$2
-OPT="${3:-}"
+OUTPUT=""
+SITE="$(yq r settings.yaml site)"
+LANG="$(yq r settings.yaml language)"
+while getopts ":ol:s:n:" opt; do
+    case "${opt}" in
+        n)
+            NUMBER="${OPTARG}"
+            ;;
+        o)
+            OUTPUT=1
+            ;;
+        s)
+            SITE="${OPTARG}"
+            ;;
+        l)
+            LANG="${OPTARG}"
+            ;;
+    esac
+done
 
 function is_fetched() {
-    if [ "$SITE" == "boj" ] & [ -f "${DIR}/${NUMBER}.input.txt" ]; then
+    if [ "$SITE" == "boj" ] & [ -f "${DIR}/${NUMBER}.${LANG}" ]; then
         return 0
-    elif [ "$SITE" == "programmers" ] & [ -f "${DIR}/${NUMBER}.py" ]; then
+    elif [ "$SITE" == "programmers" ] & [ -f "${DIR}/${NUMBER}.${LANG}" ]; then
         return 0
     fi
 
@@ -18,33 +34,49 @@ function is_fetched() {
 function fetch() {
     case "$SITE" in
     "boj")
-        echo "# https://www.acmicpc.net/problem/${NUMBER}" > "${DIR}/${NUMBER}.py"
-    ;;
+        case "$LANG" in
+            "py")
+                CODE="#"
+                ;;
+            "js")
+                CODE="//"
+                ;;
+            esac
+
+        echo "${CODE} https://www.acmicpc.net/problem/${NUMBER}" > "${DIR}/${NUMBER}.${LANG}"
+        ;;
     "programmers")
         curl "https://programmers.co.kr/learn/courses/30/lessons/${NUMBER}?language=python3" \
             > "${DIR}/${NUMBER}.temp.html"
-    ;;
+        ;;
     esac
 
     node load.js "${SITE}" "${NUMBER}" "${DIR}"
-    code "${DIR}/${NUMBER}.py"
+    code "${DIR}/${NUMBER}.${LANG}"
     rm "${DIR}/${NUMBER}.temp.html"
     cp casetest.py "${DIR}"
 }
 
 function _test() {
-    case "$SITE" in
+    case "${SITE}" in
     "boj")
-        python3 "${DIR}/${NUMBER}.py" < "${DIR}/${NUMBER}.input.txt" > "${DIR}/${NUMBER}.your.txt"
+        case "${LANG}" in
+        "py")
+            python3 "${DIR}/${NUMBER}.py" < "${DIR}/${NUMBER}.input.txt" > "${DIR}/${NUMBER}.your.txt"
+            ;;
+        "js")
+            node "${DIR}/${NUMBER}.js" < "${DIR}/${NUMBER}.input.txt" > "${DIR}/${NUMBER}.your.txt"
+            ;;
+        esac
         if [[ $(git diff --no-index "${DIR}/${NUMBER}.output.txt" "${DIR}/${NUMBER}.your.txt") ]]; then
             git diff --no-index "${DIR}/${NUMBER}.output.txt" "${DIR}/${NUMBER}.your.txt";
         else
             echo 'Your answer is good for in/output samples';
         fi
-    ;;
+        ;;
     "programmers")
         python3 "${DIR}/${NUMBER}.test.py"
-    ;;
+        ;;
     esac
 }
 
@@ -55,7 +87,7 @@ if ! is_fetched; then
     echo "Problem ${NUMBER} is not fetched yet.";
     fetch
 else
-    if [ "$OPT" == "-o" ]; then # output only
+    if [ ! -z "${OUTPUT}" ]; then # output only
         python3 "${DIR}/${NUMBER}.py" < "${DIR}/${NUMBER}.input.txt"
     else
         _test

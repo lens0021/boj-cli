@@ -1,7 +1,7 @@
 # Baekjoon Online Judge용 커맨드라인 인터페이스
 
 ```shell
-$ ./boj 1000
+$ ./index -n 1000
 Your answer is good for in/output samples
 ```
 
@@ -10,14 +10,12 @@ Your answer is good for in/output samples
 다음 명령 실행시 문제를 가져오거나 채점합니다. (site_tag는 아래 나열된 목록 중 하나, problem_number는 문제 번호 숫자)
 
 ```shell
-./index boj [problem_number]
-# 혹은 간단하게
-./[site_tag] [problem_number]
+./index boj -s [site_tag] -l [language_code] -n [problem_number]
 ```
 
 어떤 문제에 대해 처음으로 커맨드를 실행했다면, 프로그램은 해당 문제의 입력 및 출력 예제를 가져와 저장하고 문제 링크를 최상단에 주석으로 위치시킨 빈 파일을 생성하고 이를 VS코드로 엽니다.
 
-이후 실행시에는 `[problem_number].py`에 예제 입력을 사용하여 실행한 후 예제 출력과 비교합니다.
+이후 실행시에는 `[problem_number].[language_code]`에 예제 입력을 사용하여 실행한 후 예제 출력과 비교합니다.
 
 ### 사용 가능 사이트
 
@@ -25,6 +23,13 @@ Your answer is good for in/output samples
 | ----- | --------------------- | ----------------------------------------------------- |
 | `boj` | Baekjoon Online Judge | https://www.acmicpc.net/problem/$1                    |
 | `prg` | Programmers           | https://programmers.co.kr/learn/courses/30/lessons/$1 |
+
+### 사용 가능 언어
+
+| 태그 | 언어    |
+| ---- | ------- |
+| `py` | Python3 |
+| `js` | Node.js |
 
 ### 주의사항
 
