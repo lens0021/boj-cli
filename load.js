@@ -17,6 +17,7 @@ const PATH = process.argv[4];
 
 switch (SITE) {
   case "boj":
+    let html;
     https
       .get(
         {
@@ -25,7 +26,9 @@ switch (SITE) {
         },
         res => {
           res.setEncoding("utf8");
-          res.on("data", chunk => {});
+          res.on("data", chunk => {
+            html += chunk;
+          });
           res.on("end", () => {
             const document = new JSDOM(html).window.document;
 
