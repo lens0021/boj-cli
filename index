@@ -53,7 +53,7 @@ function fetch() {
 
     node load.js "${SITE}" "${NUMBER}" "${DIR}"
     code "${DIR}/${NUMBER}.${LANG}"
-    rm "${DIR}/${NUMBER}.temp.html"
+    rm "${DIR}/${NUMBER}.temp.html" 2> /dev/null
     cp casetest.py "${DIR}"
 }
 
