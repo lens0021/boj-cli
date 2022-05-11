@@ -1,3 +1,5 @@
+이 프로젝트 대신 https://github.com/agrawal-d/cph 프로젝트를 대신 사용하는 것을 고려해 주십시오.
+
 # Baekjoon Online Judge용 커맨드라인 인터페이스
 
 ```shell
